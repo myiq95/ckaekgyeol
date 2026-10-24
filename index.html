@@ -15,8 +15,8 @@
 [data-theme=sepia]{--bg:#e8dcc4;--ink:#3b2f20;--sub:#7d6c52;--acc:#8c4f2b;--card:#f1e7d1;--line:#d4c4a2;--ridge:#b7a27c;--moon:#f3e3b8}
 [data-theme=night],.dk{--bg:#0f131c;--ink:#c9cfdb;--sub:#7f8798;--acc:#c4a46b;--card:#181e2b;--line:#272f40;--ridge:#26334d;--moon:#d9c48f}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;min-height:-webkit-fill-available;background:var(--bg);color:var(--ink);font-family:var(--ff);overflow:hidden;overscroll-behavior:none}
-section{position:fixed;top:0;left:0;right:0;bottom:calc(-1*var(--bot));display:none;background:var(--bg);color:var(--ink)}
+html,body{margin:0;height:var(--H,100%);background:var(--bg);color:var(--ink);font-family:var(--ff);overflow:hidden;overscroll-behavior:none}
+section{position:fixed;top:0;left:0;right:0;height:var(--H,100vh);display:none;background:var(--bg);color:var(--ink)}
 section.on{display:block}
 .art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .art .r{fill:var(--ridge)}.art .m{fill:var(--moon)}.art .s{stroke:var(--ridge);fill:none;stroke-width:1}
@@ -62,15 +62,15 @@ svg.i{width:22px;height:22px}
 .nav{display:flex;justify-content:center;gap:12px;margin-top:2.4em;font-size:15px}
 .nav button,.end{padding:12px 22px;border:1px solid var(--acc);border-radius:24px;color:var(--acc)}
 .end{border:0;color:var(--sub)}
-.mn{position:fixed;z-index:20;top:calc(var(--top) + 4px);display:flex;gap:2px;transition:transform .28s,opacity .28s}
-.mn button{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:color-mix(in srgb,var(--card) 80%,transparent);backdrop-filter:blur(8px);color:var(--ink);font-size:13px;font-weight:700}
-.mn svg.i{width:18px;height:18px}
-#ml{right:calc(50% + 72px)}#mr{left:calc(50% + 72px)}
+.mn{position:fixed;z-index:20;top:max(4px,calc(var(--top) - 39px));display:flex;gap:2px;transition:transform .28s,opacity .28s}
+.mn button{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:color-mix(in srgb,var(--card) 80%,transparent);backdrop-filter:blur(8px);color:var(--ink);font-size:13px;font-weight:700}
+.mn svg.i{width:14px;height:14px}.mn button{font-size:11px}.row button .i{width:18px;height:18px;vertical-align:-4px;margin-right:4px}
+#ml{right:calc(50% + 68px)}#mr{left:calc(50% + 66px)}
 .hide .mn{opacity:0;transform:translateY(-60px);pointer-events:none}
-#pg{position:fixed;left:0;bottom:0;height:3px;background:var(--acc);z-index:20;transition:opacity .28s}
+#pg{position:fixed;left:0;top:calc(var(--H,100vh) - 3px);height:3px;background:var(--acc);z-index:20;transition:opacity .28s}
 .hide #pg{opacity:0}
 /* sheets */
-.ov{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.4);display:none}
+.ov{position:fixed;top:0;left:0;right:0;height:var(--H,100vh);z-index:40;background:rgba(0,0,0,.4);display:none}
 .ov.on{display:block}
 .sh{position:absolute;left:0;right:0;bottom:0;max-height:82%;overflow:auto;background:var(--card);color:var(--ink);border-radius:22px 22px 0 0;padding:20px 20px calc(var(--bot) + 20px)}
 .sh h3{margin:0 0 14px;font-size:17px}
@@ -96,14 +96,14 @@ svg.i{width:22px;height:22px}
 </section>
 <section id="rd"><div id="bk"></div></section>
 <div id="rm" style="display:none">
-  <div class="mn" id="ml"><button id="bBack"></button><button id="bToc"></button></div>
-  <div class="mn" id="mr"><button id="bTts"></button><button id="bSet">Aa</button></div>
+  <div class="mn" id="ml"><button id="bToc"></button></div>
+  <div class="mn" id="mr"><button id="bSet">Aa</button></div>
   <div id="pg"></div>
 </div>
 <div class="ov" id="ovPaste"><div class="sh"><h3>텍스트 붙여넣기</h3><input type="text" id="pTitle" placeholder="제목 (선택)"><label>본문</label><textarea id="pText" placeholder="여기에 글을 붙여넣으세요"></textarea><button class="pri" id="pOk">저장하고 읽기</button></div></div>
 <div class="ov" id="ovToc"><div class="sh"><h3>목차</h3><div class="toc" id="toc"></div></div></div>
 <div class="ov" id="ovSet"><div class="sh">
-  <h3>읽기 설정</h3>
+  <h3>읽기 설정</h3><div class="row"><button id="bBack"></button><button id="bTts"></button></div>
   <label>테마</label><div class="row" id="thm"><button data-t="light">밝게</button><button data-t="sepia">세피아</button><button data-t="night">나이트</button></div>
   <label>글꼴 (기기에 설치된 글꼴)</label>
   <select id="fSel"></select>
@@ -196,7 +196,7 @@ function saveNow(){if(!cur||view!='rd')return;const m=R.scrollHeight-R.clientHei
 $('#bToc').onclick=()=>{$('#toc').innerHTML=(cur.auto?'<div style="font-size:12px;color:var(--sub);padding:0 4px 8px">제목을 찾지 못해 임의 목차로 나눴어요.</div>':'')+cur.chs.map((c,i)=>`<button data-c="${i}" class="${i==cur.ch?'on':''}">${esc(c.t)}</button>`).join('');$('#ovToc').classList.add('on');const o=$('#toc .on');o&&setTimeout(()=>o.scrollIntoView({block:'center'}),30)};
 $('#toc').onclick=e=>{const b=e.target.closest('[data-c]');if(b){ttsStop();$('#ovToc').classList.remove('on');renderCh(+b.dataset.c)}};
 $$('.ov').forEach(o=>o.onclick=e=>{if(e.target==o)o.classList.remove('on')});
-$('#bBack').onclick=()=>{saveNow();show('lib')};
+$('#bBack').onclick=()=>{$('#ovSet').classList.remove('on');saveNow();show('lib')};
 /* settings */
 $('#bSet').onclick=()=>$('#ovSet').classList.add('on');
 $('#fSel').innerHTML=Object.entries(FONTS).map(([k,v])=>`<option value="${k}">${v[0]}</option>`).join('');
@@ -209,20 +209,20 @@ $('#vSel').onchange=e=>{S.voice=e.target.value;applySet()};
 let speaking=false,q=[],qi=0;
 function loadVoices(){const v=(speechSynthesis.getVoices?speechSynthesis.getVoices():[]).filter(x=>/^ko/i.test(x.lang));$('#vSel').innerHTML=v.length?v.map(x=>`<option value="${x.voiceURI}">${x.name}</option>`).join(''):'<option value="">기본 한국어 음성</option>';if(S.voice)$('#vSel').value=S.voice}
 if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
-function ttsStop(){speaking=false;q=[];if('speechSynthesis'in window)speechSynthesis.cancel();$$('.hl').forEach(e=>e.classList.remove('hl'));$('#bTts').innerHTML=ic('play')}
+function ttsStop(){speaking=false;q=[];if('speechSynthesis'in window)speechSynthesis.cancel();$$('.hl').forEach(e=>e.classList.remove('hl'));$('#bTts').innerHTML=ic('play')+' 읽어주기'}
 function ttsPlay(){if(!('speechSynthesis'in window))return toast('이 기기는 음성 읽기를 지원하지 않아요');
  const els=[...BK.querySelectorAll('.t')];let s=els.findIndex(e=>e.offsetTop+e.offsetHeight>R.scrollTop+60);if(s<0)s=0;
  q=[];els.slice(s).forEach(el=>{(el.textContent.match(/[^.!?。…]+[.!?。…”"」』]*\s*/g)||[el.textContent]).forEach(t=>t.trim()&&q.push({el,t:t.trim()}))});
- speaking=true;qi=0;$('#bTts').innerHTML=ic('stop');speechSynthesis.cancel();next()}
+ speaking=true;qi=0;$('#bTts').innerHTML=ic('stop')+' 정지';speechSynthesis.cancel();next()}
 function next(){if(!speaking)return;$$('.hl').forEach(e=>e.classList.remove('hl'));if(qi>=q.length){if(cur.ch<cur.chs.length-1){renderCh(cur.ch+1);return setTimeout(ttsPlay,300)}return ttsStop()}
  const it=q[qi++],u=new SpeechSynthesisUtterance(it.t);u.lang='ko-KR';u.rate=S.rate;const v=speechSynthesis.getVoices().find(x=>x.voiceURI==S.voice);if(v)u.voice=v;
  it.el.classList.add('hl');const r=it.el.getBoundingClientRect();if(r.top<80||r.bottom>innerHeight-80)R.scrollTo({top:R.scrollTop+r.top-innerHeight/3,behavior:'smooth'});
  u.onend=next;u.onerror=()=>{speaking&&next()};speechSynthesis.speak(u)}
-$('#bTts').onclick=()=>speaking?ttsStop():ttsPlay();
+$('#bTts').onclick=()=>{$('#ovSet').classList.remove('on');speaking?ttsStop():ttsPlay()};
 /* home / pickers */
 $('#home').innerHTML=art()+`<h1>책결</h1><p>나만의 조용한 서재</p><button class="hb" id="hLib">${ic('lib')}서재</button><button class="hb" id="hPaste">${ic('paste')}텍스트 붙여넣기</button><button class="hb" id="hFile">${ic('file')}파일 열기</button>`;
-$('#lib').insertAdjacentHTML('afterbegin',art());$('#rd').insertAdjacentHTML('afterbegin','<div style="position:fixed;top:0;left:0;right:0;bottom:calc(-1*var(--bot));opacity:.12;pointer-events:none">'+art()+'</div>');
-$('#toHome').innerHTML=ic('home');$('#addF').innerHTML=ic('file');$('#bBack').innerHTML=ic('back');$('#bToc').innerHTML=ic('toc');$('#bTts').innerHTML=ic('play');
+$('#lib').insertAdjacentHTML('afterbegin',art());$('#rd').insertAdjacentHTML('afterbegin','<div style="position:fixed;top:0;left:0;right:0;height:var(--H,100vh);opacity:.12;pointer-events:none">'+art()+'</div>');
+$('#toHome').innerHTML=ic('home');$('#addF').innerHTML=ic('file');$('#bBack').innerHTML=ic('back')+' 서재로';$('#bToc').innerHTML=ic('toc');$('#bTts').innerHTML=ic('play')+' 읽어주기';
 const fi=document.createElement('input');fi.type='file';fi.multiple=true;fi.accept='.txt,.md,.markdown,.html,.htm,.xhtml,.docx,.pdf,.epub,text/plain';fi.style.display='none';document.body.appendChild(fi);
 fi.onchange=()=>{addFiles([...fi.files]);fi.value=''};
 const pick=()=>fi.click();$('#hFile').onclick=pick;$('#addF').onclick=pick;
@@ -231,6 +231,8 @@ $('#hPaste').onclick=()=>$('#ovPaste').classList.add('on');
 $('#pOk').onclick=async()=>{const t=$('#pText').value.trim();if(!t)return toast('본문을 붙여넣어 주세요');const r=build(t,($('#pTitle').value.trim()||'붙여넣은 글')+'.txt',!$('#pTitle').value.trim());if($('#pTitle').value.trim())r.title=$('#pTitle').value.trim();
  const b=Object.assign(r,{id:Date.now()+Math.random(),key:'paste:'+Date.now(),ch:0,p:0,done:false,t:Date.now(),pct:0});await dbPut(b);$('#ovPaste').classList.remove('on');$('#pText').value='';$('#pTitle').value='';openBook(b)};
 /* init */
+function setH(){const p=matchMedia('(orientation:portrait)').matches,f=p?Math.max(screen.height,screen.width):Math.min(screen.height,screen.width);document.documentElement.style.setProperty('--H',(navigator.standalone?Math.max(innerHeight,f):innerHeight)+'px')}
+setH();addEventListener('resize',setH);addEventListener('orientationchange',()=>setTimeout(setH,200));
 $('#fSel').value=S.font;$('#fIn').value=S.custom;$('#rFs').value=S.fs;$('#rLs').value=S.ls;$('#rLh').value=S.lh;$('#rRt').value=S.rate;applySet();
 document.addEventListener('visibilitychange',()=>document.hidden&&saveNow());
 /* PWA: 아이콘 & manifest 생성 */
