@@ -70,6 +70,12 @@ svg.i{width:22px;height:22px}
 .hide .mn{opacity:0;transform:translateY(-60px);pointer-events:none}
 #pg{position:fixed;left:0;top:calc(var(--H,100vh) - 3px);height:3px;background:var(--acc);z-index:20;transition:opacity .28s}
 .hide #pg{opacity:0}
+/* 웹뷰/전체화면 앱(상태바 없음): 아일랜드 양옆 */
+html.web{--top:env(safe-area-inset-top,0px)}
+html.web .mn{top:max(10px,calc(var(--top) - 44px));gap:6px}
+html.web .mn button{width:32px;height:32px}
+html.web #ml{left:auto;right:calc(50% + 72px)}
+html.web #mr{right:auto;left:calc(50% + 72px)}
 /* sheets */
 .ov{position:fixed;top:0;left:0;right:0;height:var(--H,100vh);z-index:40;background:rgba(0,0,0,.4);display:none}
 .ov.on{display:block}
@@ -232,6 +238,7 @@ $('#hPaste').onclick=()=>$('#ovPaste').classList.add('on');
 $('#pOk').onclick=async()=>{const t=$('#pText').value.trim();if(!t)return toast('본문을 붙여넣어 주세요');const r=build(t,($('#pTitle').value.trim()||'붙여넣은 글')+'.txt',!$('#pTitle').value.trim());if($('#pTitle').value.trim())r.title=$('#pTitle').value.trim();
  const b=Object.assign(r,{id:Date.now()+Math.random(),key:'paste:'+Date.now(),ch:0,p:0,done:false,t:Date.now(),pct:0});await dbPut(b);$('#ovPaste').classList.remove('on');$('#pText').value='';$('#pTitle').value='';openBook(b)};
 /* init */
+if(!navigator.standalone)document.documentElement.classList.add('web');
 if(!FONTS[S.font])S.font='sys';
 function setH(){const p=matchMedia('(orientation:portrait)').matches,f=p?Math.max(screen.height,screen.width):Math.min(screen.height,screen.width);document.documentElement.style.setProperty('--H',(navigator.standalone?Math.max(innerHeight,f):innerHeight)+'px')}
 setH();addEventListener('resize',setH);addEventListener('orientationchange',()=>setTimeout(setH,200));
