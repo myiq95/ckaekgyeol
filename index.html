@@ -236,7 +236,7 @@ function next(){if(!speaking)return;$$('.hl').forEach(e=>e.classList.remove('hl'
 $('#bTts').onclick=()=>{$('#ovSet').classList.remove('on');speaking?ttsStop():ttsPlay()};
 /* home / pickers */
 $('#home').innerHTML=art()+`<h1>책결</h1><p>나만의 조용한 서재</p><button class="hb" id="hLib">${ic('lib')}서재</button><button class="hb" id="hPaste">${ic('paste')}텍스트 붙여넣기</button><button class="hb" id="hFile">${ic('file')}파일 열기</button>`;
-$('#lib').insertAdjacentHTML('afterbegin',art());$('#rd').insertAdjacentHTML('afterbegin','<div style="position:fixed;top:0;left:0;right:0;height:var(--H,100vh);opacity:.12;pointer-events:none">'+art()+'</div>');
+$('#lib').insertAdjacentHTML('afterbegin',art());$('#rd').insertAdjacentHTML('afterbegin','<div style="position:fixed;top:0;left:0;right:0;height:var(--H,100vh);opacity:.5;pointer-events:none;-webkit-mask-image:linear-gradient(#000,rgba(0,0,0,.6) 30%,rgba(0,0,0,.6) 65%,#000)">'+art()+'</div>');
 $('#toHome').innerHTML=ic('home');$('#addF').innerHTML=ic('file');$('#bBack').innerHTML=ic('back');$('#bToc').innerHTML=ic('toc');$('#bTts').innerHTML=ic('play');
 const fi=document.createElement('input');fi.type='file';fi.multiple=true;fi.accept='.txt,.md,.markdown,.html,.htm,.xhtml,.docx,.pdf,.epub,text/plain';fi.style.display='none';document.body.appendChild(fi);
 fi.onchange=()=>{addFiles([...fi.files]);fi.value=''};
