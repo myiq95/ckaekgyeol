@@ -11,7 +11,7 @@
 <title>책결</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&text=%EC%B1%85%EA%B2%B0%EC%84%9C%EC%9E%AC&display=swap">
 <style>
-:root{--ff:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;--fs:19px;--ls:0em;--lh:1.85;--top:max(env(safe-area-inset-top,0px),52px);--bot:env(safe-area-inset-bottom,0px)}
+:root{--ff:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;--fs:19px;--ls:0em;--lh:1.85;--fw:400;--top:max(env(safe-area-inset-top,0px),52px);--bot:env(safe-area-inset-bottom,0px)}
 [data-theme=light],.lt{--bg:#eceee9;--ink:#1c2230;--sub:#6b7280;--acc:#8a6a3b;--card:#f6f7f3;--line:#d3d8d0;--ridge:#9fb0a8;--moon:#e3d5b4}
 [data-theme=sepia]{--bg:#e8dcc4;--ink:#3b2f20;--sub:#7d6c52;--acc:#8c4f2b;--card:#f1e7d1;--line:#d4c4a2;--ridge:#b7a27c;--moon:#f3e3b8}
 [data-theme=night],.dk{--bg:#0f131c;--ink:#c9cfdb;--sub:#7f8798;--acc:#c4a46b;--card:#181e2b;--line:#272f40;--ridge:#26334d;--moon:#d9c48f}
@@ -50,14 +50,14 @@ svg.i{width:22px;height:22px}
 /* reader */
 #rd{overflow:auto;-webkit-overflow-scrolling:touch}
 #rd.on{display:block}
-#bk{position:relative;max-width:660px;margin:0 auto;padding:calc(var(--top) + 44px) 24px calc(var(--bot) + 280px);font-size:var(--fs);letter-spacing:var(--ls);line-height:var(--lh);word-break:keep-all;overflow-wrap:break-word}
+#bk{position:relative;max-width:660px;margin:0 auto;padding:calc(var(--top) + 44px) 24px calc(var(--bot) + 280px);font-size:var(--fs);font-weight:var(--fw);letter-spacing:var(--ls);line-height:var(--lh);word-break:keep-all;overflow-wrap:break-word}
 #bk .ch+.ch{margin-top:2.6em}#bk h1{font:700 1.7em/1.35 var(--ff);text-align:center;margin:.4em 0 1.6em;letter-spacing:.04em}
 #bk h1:after,#bk h2:before{content:'';display:block;width:34px;height:2px;background:var(--acc);margin:.7em auto 0}
 #bk h2{font:600 1.3em/1.4 var(--ff);text-align:center;margin:1.2em 0 1.5em}
 #bk h2:before{margin:0 auto .7em}
 #bk h1:after{margin:.7em auto 0}
 #bk p{margin:0 0 .9em;text-align:left}
-#bk blockquote{margin:1em 0;padding:.35em 0 .35em 1em;border-left:3px solid var(--acc);background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 10%,transparent),transparent);border-radius:2px;font-weight:500}
+#bk blockquote{margin:1em 0;padding:.35em 0 .35em 1em;border-left:3px solid var(--acc);background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 10%,transparent),transparent);border-radius:2px;font-weight:calc(var(--fw) + 100)}
 #bk .sep{text-align:center;color:var(--acc);margin:1.4em 0;font-size:.7em;letter-spacing:.8em}
 #bk .hl{background:color-mix(in srgb,var(--acc) 22%,transparent);border-radius:4px}
 .nav{display:flex;justify-content:center;gap:12px;margin-top:2.4em;font-size:15px}
@@ -115,6 +115,7 @@ html.web #mr{right:auto;left:calc(50% + 72px)}
   <label>글꼴 (기기에 설치된 글꼴)</label>
   <select id="fSel"></select>
   <input type="text" id="fIn" placeholder="글꼴 이름 직접 입력 (예: Pretendard)" style="margin-top:8px">
+  <label>글자 굵기</label><div class="row" id="fw"><button data-w="400">보통</button><button data-w="500">중간</button><button data-w="700">굵게</button></div>
   <label>글자 크기 <span id="vFs"></span></label><input type="range" id="rFs" min="14" max="32" step="1">
   <label>자간 <span id="vLs"></span></label><input type="range" id="rLs" min="-0.03" max="0.15" step="0.01">
   <label>줄 간격 <span id="vLh"></span></label><input type="range" id="rLh" min="1.4" max="2.5" step="0.05">
@@ -134,10 +135,10 @@ const DB=new Promise((ok,no)=>{const r=indexedDB.open('chaekgyeol',1);r.onupgrad
 const tx=async(m,f)=>{const d=await DB;return new Promise((ok,no)=>{const t=d.transaction('b',m),q=f(t.objectStore('b'));t.oncomplete=()=>ok(q.result);t.onerror=no})};
 const dbAll=()=>tx('readonly',s=>s.getAll()),dbPut=b=>tx('readwrite',s=>s.put(b)),dbDel=id=>tx('readwrite',s=>s.delete(id));
 /* settings */
-const defS={theme:'light',font:'sys',custom:'',fs:19,ls:0,lh:1.85,rate:1,voice:''};
+const defS={theme:'light',fw:400,font:'sys',custom:'',fs:19,ls:0,lh:1.85,rate:1,voice:''};
 let S=Object.assign({},defS,JSON.parse(localStorage.getItem('cg')||'{}'));
 const FONTS={sys:['시스템 기본 (고딕)',"-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif"],noto:['본명조 (웹폰트)',"'Noto Serif KR',serif",'Noto+Serif+KR:wght@400;500;700'],nanumM:['나눔명조 (웹폰트)',"'Nanum Myeongjo',serif",'Nanum+Myeongjo:wght@400;700'],gowun:['고운바탕 (웹폰트)',"'Gowun Batang',serif",'Gowun+Batang:wght@400;700'],nanumG:['나눔고딕 (웹폰트)',"'Nanum Gothic',sans-serif",'Nanum+Gothic:wght@400;700'],gowunD:['고운돋움 (웹폰트)',"'Gowun Dodum',sans-serif",'Gowun+Dodum']};
-function applySet(){const r=document.documentElement.style;const g=FONTS[S.font]?.[2];if(g&&!applySet.l?.[g]){(applySet.l=applySet.l||{})[g]=1;const k=document.createElement('link');k.rel='stylesheet';k.href='https://fonts.googleapis.com/css2?family='+g+'&display=swap';document.head.appendChild(k)}let ff=FONTS[S.font]?.[1]||FONTS.sys[1];if(S.custom.trim())ff=`'${S.custom.trim().replace(/'/g,'')}',`+ff;r.setProperty('--ff',ff);r.setProperty('--fs',S.fs+'px');r.setProperty('--ls',S.ls+'em');r.setProperty('--lh',S.lh);document.documentElement.dataset.theme=S.theme;$('meta[name=theme-color]').content={light:'#eceee9',sepia:'#e8dcc4',night:'#0f131c'}[S.theme];localStorage.setItem('cg',JSON.stringify(S));
+function applySet(){const r=document.documentElement.style;const g=FONTS[S.font]?.[2];if(g&&!applySet.l?.[g]){(applySet.l=applySet.l||{})[g]=1;const k=document.createElement('link');k.rel='stylesheet';k.href='https://fonts.googleapis.com/css2?family='+g+'&display=swap';document.head.appendChild(k)}let ff=FONTS[S.font]?.[1]||FONTS.sys[1];if(S.custom.trim())ff=`'${S.custom.trim().replace(/'/g,'')}',`+ff;r.setProperty('--ff',ff);r.setProperty('--fs',S.fs+'px');r.setProperty('--ls',S.ls+'em');r.setProperty('--lh',S.lh);r.setProperty('--fw',S.fw);$$('#fw button').forEach(b=>b.classList.toggle('on',b.dataset.w==S.fw));document.documentElement.dataset.theme=S.theme;$('meta[name=theme-color]').content={light:'#eceee9',sepia:'#e8dcc4',night:'#0f131c'}[S.theme];localStorage.setItem('cg',JSON.stringify(S));
 $('#vFs').textContent=S.fs+'px';$('#vLs').textContent=S.ls;$('#vLh').textContent=S.lh;$('#vRt').textContent=S.rate+'x';$$('#thm button').forEach(b=>b.classList.toggle('on',b.dataset.t==S.theme))}
 /* views */
 let cur=null,view='home';
@@ -219,6 +220,7 @@ $('#fSel').onchange=e=>{S.font=e.target.value;applySet()};
 $('#fIn').oninput=e=>{S.custom=e.target.value;applySet()};
 [['rFs','fs'],['rLs','ls'],['rLh','lh'],['rRt','rate']].forEach(([id,k])=>$('#'+id).oninput=e=>{S[k]=+e.target.value;applySet()});
 $('#thm').onclick=e=>{const b=e.target.closest('[data-t]');if(b){S.theme=b.dataset.t;applySet()}};
+$('#fw').onclick=e=>{const b=e.target.closest('[data-w]');if(b){S.fw=+b.dataset.w;applySet()}};
 $('#vSel').onchange=e=>{S.voice=e.target.value;applySet()};
 /* tts (기기 시스템 음성 = speechSynthesis) */
 let speaking=false,q=[],qi=0;
