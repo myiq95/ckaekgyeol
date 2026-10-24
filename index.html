@@ -50,7 +50,7 @@ svg.i{width:22px;height:22px}
 /* reader */
 #rd{overflow:auto;-webkit-overflow-scrolling:touch}
 #rd.on{display:block}
-#bk{position:relative;max-width:660px;margin:0 auto;padding:calc(var(--top) + 52px) 24px calc(var(--bot) + 90px);font-size:var(--fs);letter-spacing:var(--ls);line-height:var(--lh);word-break:keep-all;overflow-wrap:break-word}
+#bk{position:relative;max-width:660px;margin:0 auto;padding:calc(var(--top) + 44px) 24px calc(var(--bot) + 90px);font-size:var(--fs);letter-spacing:var(--ls);line-height:var(--lh);word-break:keep-all;overflow-wrap:break-word}
 #bk h1{font:700 1.7em/1.35 var(--ff);text-align:center;margin:.4em 0 1.6em;letter-spacing:.04em}
 #bk h1:after,#bk h2:before{content:'';display:block;width:34px;height:2px;background:var(--acc);margin:.7em auto 0}
 #bk h2{font:600 1.3em/1.4 var(--ff);text-align:center;margin:1.2em 0 1.5em}
@@ -63,7 +63,7 @@ svg.i{width:22px;height:22px}
 .nav{display:flex;justify-content:center;gap:12px;margin-top:2.4em;font-size:15px}
 .nav button,.end{padding:12px 22px;border:1px solid var(--acc);border-radius:24px;color:var(--acc)}
 .end{border:0;color:var(--sub)}
-.mn{position:fixed;z-index:20;top:calc(var(--top) - 2px);display:flex;gap:8px;transition:transform .28s,opacity .28s}
+.mn{position:fixed;z-index:20;top:calc(var(--top) - 14px);display:flex;gap:8px;transition:transform .28s,opacity .28s}
 .mn button{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:color-mix(in srgb,var(--card) 80%,transparent);backdrop-filter:blur(8px);color:var(--ink);font-size:13px;font-weight:700}
 .mn svg.i{width:19px;height:19px}.mn button{font-size:13px}.row button .i{width:18px;height:18px;vertical-align:-4px;margin-right:4px}
 #ml{left:12px}#mr{right:12px}
@@ -79,7 +79,7 @@ html.web #mr{right:auto;left:calc(50% + 72px)}
 /* sheets */
 .ov{position:fixed;top:0;left:0;right:0;height:var(--H,100vh);z-index:40;background:rgba(0,0,0,.4);display:none}
 .ov.on{display:block}
-.sh{position:absolute;left:0;right:0;bottom:0;max-height:calc(var(--H,100vh) - var(--top) - 30px);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--card);color:var(--ink);border-radius:22px 22px 0 0;padding:20px 20px calc(var(--bot) + 64px)}
+.sh{position:absolute;left:10px;right:10px;top:calc(var(--top) + 52px);max-height:calc(var(--H,100vh)*.66);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--card);color:var(--ink);border-radius:22px;padding:20px 20px 28px;box-shadow:0 12px 40px rgba(0,0,0,.28)}
 .sh h3{margin:0 0 14px;font-size:17px}
 .sh label{display:block;font-size:13px;color:var(--sub);margin:14px 0 6px}
 .sh input[type=text],.sh select,.sh textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
@@ -88,7 +88,7 @@ html.web #mr{right:auto;left:calc(50% + 72px)}
 .row{display:flex;gap:8px}.row button{flex:1;padding:11px;border:1px solid var(--line);border-radius:10px}
 .row button.on{background:var(--ink);color:var(--bg)}
 .pri{width:100%;margin-top:14px;padding:14px;border-radius:12px;background:var(--acc);color:#fff;font-weight:600}
-.toc{max-height:calc(var(--H,100vh)*.62);overflow:auto}
+.toc{max-height:calc(var(--H,100vh)*.46);overflow:auto}
 .toc button{display:block;width:100%;text-align:left;padding:13px 4px;border-bottom:1px solid var(--line);font-size:15px;line-height:1.4}
 .toc button.on{color:var(--acc);font-weight:700}
 #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:99;padding:12px 20px;border-radius:12px;background:rgba(20,24,34,.88);color:#fff;font-size:14px;display:none}
