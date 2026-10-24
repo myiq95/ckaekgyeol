@@ -188,12 +188,12 @@ $('#t1').onclick=()=>{$('#t1').classList.add('on');$('#t0').classList.remove('on
 const R=$('#rd'),BK=$('#bk'),QR=/(“[^”]*”|"[^"]*"|「[^」]*」|『[^』]*』)/,SEP=/^(\*\s*){3,}$|^[-=~─—_◇◆#]{3,}$/;
 function segs(s){if(SEP.test(s))return[{s,x:1}];const p=s.split(QR).filter(x=>x.trim());if(p.length==1&&/^[“"「『—–]/.test(s))return[{s,q:1}];return p.map(x=>({s:x.trim(),q:/^(“|"|「|『)/.test(x)}))}
 function openBook(b){cur=b;show('rd');renderCh(b.ch,b.p)}
-function chHTML(i){const c=cur.chs[i];let h=`<section class="ch" data-ch="${i}">`;
+function chHTML(i){const c=cur.chs[i];let h=`<div class="ch" data-ch="${i}">`;
  if(i==0)h+=`<h1>${esc(cur.title)}</h1>`;
  if(!cur.auto)h+=`<h2>${esc(c.t)}</h2>`;else if(i>0)h+='<div class="sep">◆ ◆ ◆</div>';
  c.p.forEach((s,k)=>segs(s).forEach((g,j)=>{const a=j?'':` data-i="${k}"`;h+=g.x?`<div class="sep"${a}>◆ ◆ ◆</div>`:g.q?`<blockquote class="t"${a}>${esc(g.s)}</blockquote>`:`<p class="t"${a}>${esc(g.s)}</p>`}));
  if(i==cur.chs.length-1)h+='<div class="nav"><div class="end">마지막 장이에요</div></div>';
- return h+'</section>'}
+ return h+'</div>'}
 let lo=0,hi=0,lastTop=0,st;
 function renderCh(i,p=0){const n=cur.chs.length;lo=i;hi=Math.min(i+1,n-1);let h='';for(let k=lo;k<=hi;k++)h+=chHTML(k);BK.innerHTML=h;R.scrollTop=0;
  if(p>0){const e=BK.querySelector(`.ch[data-ch="${i}"] [data-i="${p}"]`);e&&(R.scrollTop=e.offsetTop-70)}
