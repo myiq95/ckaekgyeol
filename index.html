@@ -50,8 +50,8 @@ svg.i{width:22px;height:22px}
 /* reader */
 #rd{overflow:auto;-webkit-overflow-scrolling:touch}
 #rd.on{display:block}
-#bk{position:relative;max-width:660px;margin:0 auto;padding:calc(var(--top) + 44px) 24px calc(var(--bot) + 90px);font-size:var(--fs);letter-spacing:var(--ls);line-height:var(--lh);word-break:keep-all;overflow-wrap:break-word}
-#bk h1{font:700 1.7em/1.35 var(--ff);text-align:center;margin:.4em 0 1.6em;letter-spacing:.04em}
+#bk{position:relative;max-width:660px;margin:0 auto;padding:calc(var(--top) + 44px) 24px calc(var(--bot) + 280px);font-size:var(--fs);letter-spacing:var(--ls);line-height:var(--lh);word-break:keep-all;overflow-wrap:break-word}
+#bk .ch+.ch{margin-top:2.6em}#bk h1{font:700 1.7em/1.35 var(--ff);text-align:center;margin:.4em 0 1.6em;letter-spacing:.04em}
 #bk h1:after,#bk h2:before{content:'';display:block;width:34px;height:2px;background:var(--acc);margin:.7em auto 0}
 #bk h2{font:600 1.3em/1.4 var(--ff);text-align:center;margin:1.2em 0 1.5em}
 #bk h2:before{margin:0 auto .7em}
@@ -188,17 +188,25 @@ $('#t1').onclick=()=>{$('#t1').classList.add('on');$('#t0').classList.remove('on
 const R=$('#rd'),BK=$('#bk'),QR=/(“[^”]*”|"[^"]*"|「[^」]*」|『[^』]*』)/,SEP=/^(\*\s*){3,}$|^[-=~─—_◇◆#]{3,}$/;
 function segs(s){if(SEP.test(s))return[{s,x:1}];const p=s.split(QR).filter(x=>x.trim());if(p.length==1&&/^[“"「『—–]/.test(s))return[{s,q:1}];return p.map(x=>({s:x.trim(),q:/^(“|"|「|『)/.test(x)}))}
 function openBook(b){cur=b;show('rd');renderCh(b.ch,b.p)}
-function renderCh(i,p=0){const c=cur.chs[i],n=cur.chs.length;let h='';cur.ch=i;
- if(i==0)h+=`<h1>${esc(cur.title)}</h1>`;if(!cur.auto)h+=`<h2>${esc(c.t)}</h2>`;
+function chHTML(i){const c=cur.chs[i];let h=`<section class="ch" data-ch="${i}">`;
+ if(i==0)h+=`<h1>${esc(cur.title)}</h1>`;
+ if(!cur.auto)h+=`<h2>${esc(c.t)}</h2>`;else if(i>0)h+='<div class="sep">◆ ◆ ◆</div>';
  c.p.forEach((s,k)=>segs(s).forEach((g,j)=>{const a=j?'':` data-i="${k}"`;h+=g.x?`<div class="sep"${a}>◆ ◆ ◆</div>`:g.q?`<blockquote class="t"${a}>${esc(g.s)}</blockquote>`:`<p class="t"${a}>${esc(g.s)}</p>`}));
- h+=`<div class="nav">${i>0?'<button data-go="-1">이전 장</button>':''}${i<n-1?'<button data-go="1">다음 장</button>':'<div class="end">마지막 장이에요</div>'}</div>`;
- BK.innerHTML=h;R.scrollTop=0;if(p>0){const e=BK.querySelector(`[data-i="${p}"]`);e&&(R.scrollTop=e.offsetTop-70)}
- document.body.classList.remove('hide');saveNow()}
-BK.onclick=e=>{const g=e.target.closest('[data-go]');if(g){ttsStop();renderCh(cur.ch+ +g.dataset.go);return}document.body.classList.toggle('hide')};
-let lastTop=0,st;
-R.onscroll=()=>{const t=R.scrollTop,d=t-lastTop;if(t<20||d<-8)document.body.classList.remove('hide');else if(d>8)document.body.classList.add('hide');lastTop=t;clearTimeout(st);st=setTimeout(saveNow,350)};
-function saveNow(){if(!cur||view!='rd')return;const m=R.scrollHeight-R.clientHeight,f=m>0?Math.min(1,R.scrollTop/m):1,es=BK.querySelectorAll('[data-i]');let p=0;for(const e of es){if(e.offsetTop+e.offsetHeight>R.scrollTop+60){p=+e.dataset.i;break}}
- cur.p=p;cur.pct=Math.min(100,(cur.ch+f)/cur.chs.length*100);if(cur.ch==cur.chs.length-1&&f>.97){cur.done=true;cur.pct=100}cur.t=Date.now();$('#pg').style.width=cur.pct+'%';dbPut(cur)}
+ if(i==cur.chs.length-1)h+='<div class="nav"><div class="end">마지막 장이에요</div></div>';
+ return h+'</section>'}
+let lo=0,hi=0,lastTop=0,st;
+function renderCh(i,p=0){const n=cur.chs.length;lo=i;hi=Math.min(i+1,n-1);let h='';for(let k=lo;k<=hi;k++)h+=chHTML(k);BK.innerHTML=h;R.scrollTop=0;
+ if(p>0){const e=BK.querySelector(`.ch[data-ch="${i}"] [data-i="${p}"]`);e&&(R.scrollTop=e.offsetTop-70)}
+ lastTop=R.scrollTop;document.body.classList.remove('hide');saveNow()}
+function addDown(){if(hi>=cur.chs.length-1)return false;BK.insertAdjacentHTML('beforeend',chHTML(++hi));return true}
+function addUp(){if(lo<=0)return;const h0=R.scrollHeight,t0=R.scrollTop;BK.insertAdjacentHTML('afterbegin',chHTML(--lo));R.scrollTop=t0+R.scrollHeight-h0;lastTop=R.scrollTop}
+BK.onclick=()=>document.body.classList.toggle('hide');
+R.onscroll=()=>{const t=R.scrollTop,d=t-lastTop;if(t<20||d<-8)document.body.classList.remove('hide');else if(d>8)document.body.classList.add('hide');lastTop=t;if(t+R.clientHeight>R.scrollHeight-2500)addDown();if(t<800)addUp();clearTimeout(st);st=setTimeout(saveNow,350)};
+function saveNow(){if(!cur||view!='rd')return;const secs=[...BK.querySelectorAll('.ch')],y=R.scrollTop;let sc=secs[0];for(const x of secs){if(x.offsetTop<=y+80)sc=x;else break}
+ if(!sc)return;const c=+sc.dataset.ch,n=cur.chs.length;let p=0;for(const e of sc.querySelectorAll('[data-i]')){if(e.offsetTop+e.offsetHeight>y+60){p=+e.dataset.i;break}}
+ const f=Math.max(0,Math.min(1,(y-sc.offsetTop)/Math.max(1,sc.offsetHeight)));cur.ch=c;cur.p=p;cur.pct=Math.min(100,(c+f)/n*100);
+ if(c==n-1&&(y+R.clientHeight-sc.offsetTop)/sc.offsetHeight>=.98){cur.done=true;cur.pct=100}
+ cur.t=Date.now();$('#pg').style.width=cur.pct+'%';dbPut(cur)}
 /* toc */
 $('#bToc').onclick=()=>{$('#toc').innerHTML=(cur.auto?'<div style="font-size:12px;color:var(--sub);padding:0 4px 8px">제목을 찾지 못해 임의 목차로 나눴어요.</div>':'')+cur.chs.map((c,i)=>`<button data-c="${i}" class="${i==cur.ch?'on':''}">${esc(c.t)}</button>`).join('');$('#ovToc').classList.add('on');const o=$('#toc .on');o&&setTimeout(()=>o.scrollIntoView({block:'center'}),30)};
 $('#toc').onclick=e=>{const b=e.target.closest('[data-c]');if(b){ttsStop();$('#ovToc').classList.remove('on');renderCh(+b.dataset.c)}};
@@ -217,11 +225,11 @@ let speaking=false,q=[],qi=0;
 function loadVoices(){const v=(speechSynthesis.getVoices?speechSynthesis.getVoices():[]).filter(x=>/^ko/i.test(x.lang));$('#vSel').innerHTML=v.length?v.map(x=>`<option value="${x.voiceURI}">${x.name}</option>`).join(''):'<option value="">기본 한국어 음성</option>';if(S.voice)$('#vSel').value=S.voice}
 if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
 function ttsStop(){speaking=false;q=[];if('speechSynthesis'in window)speechSynthesis.cancel();$$('.hl').forEach(e=>e.classList.remove('hl'));$('#bTts').innerHTML=ic('play')}
-function ttsPlay(){if(!('speechSynthesis'in window))return toast('이 기기는 음성 읽기를 지원하지 않아요');
- const els=[...BK.querySelectorAll('.t')];let s=els.findIndex(e=>e.offsetTop+e.offsetHeight>R.scrollTop+60);if(s<0)s=0;
+function ttsPlay(after){if(!('speechSynthesis'in window))return toast('이 기기는 음성 읽기를 지원하지 않아요');
+ const els=[...BK.querySelectorAll('.t')];let s=after?els.indexOf(after)+1:els.findIndex(e=>e.offsetTop+e.offsetHeight>R.scrollTop+60);if(s<0)s=0;if(after&&s>=els.length)return ttsStop();
  q=[];els.slice(s).forEach(el=>{(el.textContent.match(/[^.!?。…]+[.!?。…”"」』]*\s*/g)||[el.textContent]).forEach(t=>t.trim()&&q.push({el,t:t.trim()}))});
  speaking=true;qi=0;$('#bTts').innerHTML=ic('stop');speechSynthesis.cancel();next()}
-function next(){if(!speaking)return;$$('.hl').forEach(e=>e.classList.remove('hl'));if(qi>=q.length){if(cur.ch<cur.chs.length-1){renderCh(cur.ch+1);return setTimeout(ttsPlay,300)}return ttsStop()}
+function next(){if(!speaking)return;$$('.hl').forEach(e=>e.classList.remove('hl'));if(qi>=q.length){const last=q[q.length-1]?.el;if(last&&addDown())return ttsPlay(last);return ttsStop()}
  const it=q[qi++],u=new SpeechSynthesisUtterance(it.t);u.lang='ko-KR';u.rate=S.rate;const v=speechSynthesis.getVoices().find(x=>x.voiceURI==S.voice);if(v)u.voice=v;
  it.el.classList.add('hl');const r=it.el.getBoundingClientRect();if(r.top<80||r.bottom>innerHeight-80)R.scrollTo({top:R.scrollTop+r.top-innerHeight/3,behavior:'smooth'});
  u.onend=next;u.onerror=()=>{speaking&&next()};speechSynthesis.speak(u)}
